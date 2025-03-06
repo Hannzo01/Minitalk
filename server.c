@@ -6,7 +6,7 @@
 /*   By: kemzouri <kemzouri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:18:30 by kemzouri          #+#    #+#             */
-/*   Updated: 2025/03/05 00:22:13 by kemzouri         ###   ########.fr       */
+/*   Updated: 2025/03/05 23:38:11 by kemzouri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,14 @@ void	handler(int signum)
 	// When 8 bits are received, print the byte and reset
 	if (i == 0)
 	{
-		write(1, &byte, 1); // Print the byte as a character
+		if (byte == '\0')
+			write(1, "\n", 1);
+		else
+			write(1, &byte, 1); // Print the byte as a character
 		byte = 0;			// Reset byte for the next character
-		i = 8;			// Reset bit counter for the next byte
+		i = 8; // Reset bit counter for the next byte
+		// need to reset i = 8 so that the next message can be received properly.	
+		//need to reset even if we received '\0' bcz the client can send multiple messages one after another
 	}
 }
 

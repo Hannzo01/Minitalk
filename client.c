@@ -6,7 +6,7 @@
 /*   By: kemzouri <kemzouri@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 17:34:55 by kemzouri          #+#    #+#             */
-/*   Updated: 2025/03/05 01:42:52 by kemzouri         ###   ########.fr       */
+/*   Updated: 2025/03/05 23:30:33 by kemzouri         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,22 @@ int	ft_atoi(char *str)
 	return (res);
 }
 
-void	convertion(char alpha)
+void	send_char(unsigned char c, int pid)
 {
-	unsigned char c = (unsigned char)alpha;
-	 	
+	unsigned char bit;
+	int	i;
+
+	i = 7;
+	while (i >= 0)
+	{
+		bit = c >> i & 1;
+		if (bit == 1)
+			kill(SIGUSR1 , pid);
+		else
+			kill(SIGUSR2, pid);
+		usleep(1000);
+		i--;
+	}
 }
 
 int main(int argc, char *argv[])
@@ -58,9 +70,10 @@ int main(int argc, char *argv[])
 		msg = argv[2];
 		while (msg[i] != '\0')
 		{
-			convertion(msg[i]);
+			convertion((unsigned char)msg[i], pid);
 			i++;
 		}
+		send_char('\0', pid);
 	}
 	else
 		printf("Error\n");
