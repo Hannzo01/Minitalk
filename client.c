@@ -49,12 +49,16 @@ void	send_char(unsigned char c, int pid)
 	{
 		bit = c >> i & 1;
 		if (bit == 1)
-			kill(SIGUSR1 , pid);
+			kill(pid, SIGUSR1);
 		else
-			kill(SIGUSR2, pid);
-		usleep(1000);
+			kill(pid, SIGUSR2);
+		usleep(500);
+		//pause();//attend un ACK après chaque bit,
 		i--;
 	}
+//	kill(pid, SIGUSR1);
+	//pause();
+	usleep(500);
 }
 
 int main(int argc, char *argv[])
@@ -67,10 +71,13 @@ int main(int argc, char *argv[])
 	if (argc == 3)
 	{
 		pid = ft_atoi(argv[1]);
+		if (pid == 0 || pid == -1)
+			return (-1);
 		msg = argv[2];
 		while (msg[i] != '\0')
 		{
-			convertion((unsigned char)msg[i], pid);
+			send_char((unsigned char)msg[i], pid);
+			pause(); //attend un ACK après chaque caractère (8 bits envoyés d'un coup).
 			i++;
 		}
 		send_char('\0', pid);
