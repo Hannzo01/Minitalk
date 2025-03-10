@@ -57,7 +57,7 @@ void	send_char(unsigned char c, int pid)
 		i--;
 	}
 //	kill(pid, SIGUSR1);
-	//pause();
+	pause();
 	usleep(500);
 }
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		while (msg[i] != '\0')
 		{
 			send_char((unsigned char)msg[i], pid);
-			pause(); //attend un ACK après chaque caractère (8 bits envoyés d'un coup).
+			//pause(); //attend un ACK après chaque caractère (8 bits envoyés d'un coup).
 			i++;
 		}
 		send_char('\0', pid);

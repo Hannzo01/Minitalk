@@ -50,7 +50,8 @@ void	ft_handler(int signum, siginfo_t *info, void *context)
 		// need to reset i = 8 so that the next message can be received properly.	
 		//need to reset even if we received '\0' bcz the client can send multiple messages one after another
 	}
-
+		old_pid = info->si_pid;
+		kill(old_pid, SIGUSR1);
 }
 
 int	main()
