@@ -23,7 +23,7 @@ void	ft_handler(int signum, siginfo_t *info, void *context)
 	static char	byte = 0; //keep track of bits across multiple signals
 	static int	i = 8; // Start from the 8th bit (MSB)
 	// Shift left to make room for the next bit
-		printf("Signal received: %d\n", signum);  // Afficher le signal reçu
+		//printf("Signal received: %d\n", signum);  // Afficher le signal reçu
 	byte = byte << 1;
 
 	// Add the bit based on the signal received
@@ -46,12 +46,12 @@ void	ft_handler(int signum, siginfo_t *info, void *context)
 		byte = 0;			// Reset byte for the next character
 		i = 8; // Reset bit counter for the next byte
 	//	old_pid = info->si_pid;
-		kill(old_pid, SIGUSR1); // L'ACK doit être envoyé uniquement après avoir reçu 8 bits. Mets kill(old_pid, SIGUSR1); juste après l'impression du caractère.
+		//kill(old_pid, SIGUSR1); // L'ACK doit être envoyé uniquement après avoir reçu 8 bits. Mets kill(old_pid, SIGUSR1); juste après l'impression du caractère.
 		// need to reset i = 8 so that the next message can be received properly.	
 		//need to reset even if we received '\0' bcz the client can send multiple messages one after another
 	}
 		old_pid = info->si_pid;
-		kill(old_pid, SIGUSR1);
+		//kill(old_pid, SIGUSR1);
 }
 
 int	main()
@@ -62,7 +62,8 @@ int	main()
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = ft_handler;
 	sigemptyset(&sa.sa_mask);
-
+	sigaddset(&sa.sa_mask, SIGUSR1);
+	sigaddset(&sa.sa_mask, SIGUSR2);
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	//signal(SIGUSR1, handler);

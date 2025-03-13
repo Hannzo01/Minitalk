@@ -12,6 +12,8 @@
 
 #include "minitalk.h"
 
+int flag = 0;
+
 int	ft_atoi(char *str)
 {
 	int	i;
@@ -52,13 +54,19 @@ void	send_char(unsigned char c, int pid)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(500);
-		//pause();//attend un ACK après chaque bit,
+		while(flag == 0)
+			usleep(1);
+			//pause();//attend un ACK après chaque bit,
 		i--;
 	}
 //	kill(pid, SIGUSR1);
-	pause();
-	usleep(500);
+	//usleep(500);
+}
+
+void handler(int signum)
+{
+	if (signum == SIGUSR1)
+		flag = 1;
 }
 
 int main(int argc, char *argv[])
@@ -76,6 +84,7 @@ int main(int argc, char *argv[])
 		msg = argv[2];
 		while (msg[i] != '\0')
 		{
+			signal(SIGUSR1, handler);
 			send_char((unsigned char)msg[i], pid);
 			//pause(); //attend un ACK après chaque caractère (8 bits envoyés d'un coup).
 			i++;
