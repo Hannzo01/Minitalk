@@ -66,7 +66,6 @@ void	send_char(unsigned char c, int pid)
         usleep(20);
         i--;
 	}
-    //chryw93 la zdt hnaya usleep
 }
 
 int main(int argc, char *argv[])
