@@ -71,7 +71,15 @@ void	ft_handler(int signum, siginfo_t *info, void *context)
           		old_pid = 0;
         	}
 		else
-		write(1, &byte, 1);
+		{	
+			if (byte < 32 || byte > 126)
+			{
+				write(1, "Error: Invalid byte received.\n", 30); //byte incomplet
+				exit (1);
+			}
+			else
+				write(1, &byte, 1);
+		}
 		byte = 0;
 		i = 8;
 	}
