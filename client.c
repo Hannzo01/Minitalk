@@ -12,7 +12,7 @@
 
 #include "minitalk.h"
 
-int flag = 0;
+int g_flag = 0;
 
 int	ft_atoi(char *str)
 {
@@ -41,6 +41,12 @@ int	ft_atoi(char *str)
 	return (res);
 }
 
+void    handler(int signum)
+{
+    if (signum == SIGUSR1)
+        g_flag = 1;
+}
+
 void	send_char(unsigned char c, int pid)
 {
 	unsigned char bit;
@@ -54,43 +60,34 @@ void	send_char(unsigned char c, int pid)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		while(flag == 0)
-			usleep(1);
-			//pause();//attend un ACK après chaque bit,
-		i--;
+        while (g_flag == 0)
+            usleep(50);
+		g_flag = 0;
+        usleep(20);
+        i--;
 	}
-//	kill(pid, SIGUSR1);
-	//usleep(500);
-}
-
-void handler(int signum)
-{
-	if (signum == SIGUSR1)
-		flag = 1;
+    //chryw93 la zdt hnaya usleep
 }
 
 int main(int argc, char *argv[])
 {
 	int		pid;
-	char	*msg;
 	int		i;
 
 	i = 0;
 	if (argc == 3)
 	{
 		pid = ft_atoi(argv[1]);
-		if (pid == 0 || pid == -1)
+		if (pid <= 0)
 			return (-1);
-		msg = argv[2];
-		while (msg[i] != '\0')
+        signal(SIGUSR1, handler);
+		while (argv[2][i] != '\0')
 		{
-			signal(SIGUSR1, handler);
-			send_char((unsigned char)msg[i], pid);
-			//pause(); //attend un ACK après chaque caractère (8 bits envoyés d'un coup).
+			send_char((unsigned char)argv[2][i], pid);
 			i++;
 		}
 		send_char('\0', pid);
 	}
 	else
-		printf("Error\n");
+		write(1, "Error\n", 6);
 }
