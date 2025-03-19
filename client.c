@@ -51,8 +51,10 @@ void	send_char(unsigned char c, int pid)
 {
 	unsigned char bit;
 	int	i;
+	int	retries;
 
 	i = 7;
+	retries = 1000;
 	while (i >= 0)
 	{
 		bit = c >> i & 1;
@@ -60,9 +62,17 @@ void	send_char(unsigned char c, int pid)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-        while (g_flag == 0)
-            usleep(50);
-		g_flag = 0;
+        while (g_flag == 0 && retries > 0)
+	{
+        	usleep(50);
+		retries--;
+	}
+	if (g_flag == 0)
+	{
+		write(2, "Error\n", 6);
+		exit(1);
+	}
+	g_flag = 0;
         usleep(20);
         i--;
 	}
@@ -88,5 +98,5 @@ int main(int argc, char *argv[])
 		send_char('\0', pid);
 	}
 	else
-		write(1, "Error\n", 6);
+		write(2, "Error\n", 6);
 }
